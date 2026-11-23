@@ -21,7 +21,7 @@ const SONGS = [
       "Brilla, brilla, pequeña estrella,",
       "¡Cuánto me pregunto qué eres!",
       "Allá arriba, tan alto en el cielo,",
-      "Como un diamante en el firmamento."
+      "Como un diamante en el cielo."
     ].join("\n"),
     vocabulary: [
       { word: "twinkle", definition: "To shine with a small, quick light." },
