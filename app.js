@@ -1,9 +1,5 @@
 /*
-  WELOVELYRICS — DATOS EDITABLES
-  1) Canciones y glosario: edita SONGS.
-  2) Preguntas: edita QUIZ_QUESTIONS (3 preguntas de ejemplo).
-  3) Videos propios: coloca tus archivos MP4 en /media y cambia las rutas videoSrc / ORDER_VIDEO_SRC.
-  No necesitas API ni servicios externos.
+  WELOVELYRICS — CONECTADO A TU NUEVO HTML Y CARPETA /media
 */
 
 // ---------- 1. BIBLIOTECA MUSICAL ----------
@@ -12,97 +8,109 @@ const SONGS = [
     id: "twinkle",
     title: "Twinkle, Twinkle, Little Star",
     artist: "Traditional nursery rhyme · Public domain",
-    videoSrc: "media/twinkle-completa.mp4", // Video musical completo que acompaña la letra.
+    video: "", // Si luego subes la canción completa, pon aquí: "media/twinkle-completa.mp4"
     english: [
       "Twinkle, twinkle, little star,",
       "How I wonder what you are!",
       "Up above the world so high,",
       "Like a diamond in the sky."
-    ].join("\\n"),
+    ].join("\n"),
     spanish: [
       "Brilla, brilla, pequeña estrella,",
       "¡Cuánto me pregunto qué eres!",
       "Allá arriba, tan alto en el cielo,",
       "Como un diamante en el firmamento."
-    ].join("\\n"),
+    ].join("\n"),
     vocabulary: [
       { word: "twinkle", definition: "To shine with a small, quick light." },
       { word: "wonder", definition: "To think about something and want to know more." },
       { word: "above", definition: "In a higher place than something else." }
-    ],
-    orderExercises: [
-      {
-        label: "A",
-        sentence: "Twinkle twinkle little star",
-        videoSrc: "media/twinkle-ordenar.mp4",
-        instruction: "Ordena las palabras para formar el verso."
-      }
     ]
   },
   {
     id: "sample",
     title: "My Little Sunshine",
     artist: "Texto de ejemplo original · Puedes reemplazarlo",
-    videoSrc: "", // Ejemplo: "media/my-little-sunshine.mp4"
-    english: "You bring a little light\\nYou make the day feel bright\\nWe sing and learn together\\nAnd make our dreams take flight.",
-    spanish: "Traes un poquito de luz\\nHaces que el día brille\\nCantamos y aprendemos juntos\\nY hacemos volar nuestros sueños.",
+    video: "",
+    english: "You bring a little light\nYou make the day feel bright\nWe sing and learn together\nAnd make our dreams take flight.",
+    spanish: "Traes un poquito de luz\nHaces que el día brille\nCantamos y aprendemos juntos\nY hacemos volar nuestros sueños.",
     vocabulary: [
       { word: "bring", definition: "To take or carry something to a person or place." },
       { word: "bright", definition: "Full of light; easy to see." },
       { word: "together", definition: "With or near another person or people." }
-    ],
-    // Ejemplo: esta canción tiene tres incisos. Puedes agregar o quitar objetos.
-    orderExercises: [
-      { label: "A", sentence: "You bring a little light", videoSrc: "media/sol-inciso-a.mp4" },
-      { label: "B", sentence: "You make the day feel bright", videoSrc: "media/sol-inciso-b.mp4" },
-      { label: "C", sentence: "We sing and learn together", videoSrc: "media/sol-inciso-c.mp4" }
     ]
   }
 ];
 
-// ---------- 2. ACTIVIDAD DE RELLENAR ESPACIOS ----------
-// Cada pregunta tiene su propio videoSrc. Coloca los tres videos en media.
-
+// ---------- 2. ACTIVIDAD DE RELLENAR ESPACIOS (3 VIDEOS) ----------
 const QUIZ_QUESTIONS = [
   {
-    prompt: "Twinkle, twinkle, little _____",
-    videoSrc: "media/pregunta-1.mp4", // Video exclusivo de la pregunta 1.
-    answer: "star",
-    options: ["star", "car", "book", "tree"],
-    definition: "A star is a large ball of hot gas in space that gives light."
+    video: "media/twinkle-p1.mp4",
+    prompt: "Twinkle, twinkle, _____ star",
+    answer: "little",
+    options: ["little", "big", "blue", "fast"],
+    definition: "Little means small in size or amount."
   },
   {
+    video: "media/twinkle-p2.mp4",
     prompt: "How I _____ what you are!",
-    videoSrc: "media/pregunta-2.mp4", // Video exclusivo de la pregunta 2.
     answer: "wonder",
     options: ["wonder", "dance", "sleep", "open"],
     definition: "To wonder means to think about something because you want to know more."
   },
   {
-    prompt: "Like a diamond in the _____.",
-    videoSrc: "media/pregunta-3.mp4", // Video exclusivo de la pregunta 3.
-    answer: "sky",
-    options: ["water", "sky", "garden", "room"],
-    definition: "The sky is the space above the Earth where we see the sun, moon and stars."
+    video: "media/twinkle-p3.mp4",
+    prompt: "Like a _____ in the sky.",
+    answer: "diamond",
+    options: ["diamond", "cloud", "bird", "plane"],
+    definition: "A diamond is a very hard, clear, and precious stone that shines brightly."
   }
 ];
 
-// ---------- 3. ACTIVIDAD DE ORDENAR VERSOS CON VIDEO ----------
-// Cada canción define sus propios orderExercises dentro de SONGS.
-// Cada inciso puede tener: label, sentence, videoSrc e instruction.
+// ---------- 3. ACTIVIDAD DE ORDENAR VERSOS (CON VIDEO) ----------
+const ORDER_EXERCISES = [
+  {
+    video: "media/twinkle-nubes.mp4",
+    words: ["little", "star", "Twinkle", "twinkle"],
+    correct: ["Twinkle", "twinkle", "little", "star"],
+    instruction: "Toca o arrastra las nubes para formar el verso que escuchas en el video."
+  }
+];
 
 // ---------- LÓGICA DE LA APLICACIÓN ----------
 const $ = (selector) => document.querySelector(selector);
-let currentSongId = SONGS[0].id;
+let currentSongId = SONGS.id;
 let questionIndex = 0;
+let orderIndex = 0;
 let points = 0;
 let answeredCurrent = false;
 let bankWords = [];
 let answerWords = [];
 let draggedWordId = null;
-let orderExerciseIndex = 0;
-let orderExerciseCompleted = false;
 
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "'"
+  })[char]);
+}
+
+// Menú móvil y año
+function setupHeaderAndFooter() {
+  const menuToggle = $("#menuToggle");
+  const mainNav = $("#mainNav");
+  if (menuToggle && mainNav) {
+    menuToggle.addEventListener("click", () => {
+      const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+      menuToggle.setAttribute("aria-expanded", String(!expanded));
+      mainNav.classList.toggle("open");
+    });
+  }
+  if ($("#currentYear")) {
+    $("#currentYear").textContent = new Date().getFullYear();
+  }
+}
+
+// 1. Biblioteca Musical
 function renderSongList() {
   $("#songCount").textContent = SONGS.length;
   $("#songList").innerHTML = SONGS.map(song => `
@@ -114,54 +122,47 @@ function renderSongList() {
     button.addEventListener("click", () => {
       currentSongId = button.dataset.song;
       renderLibrary();
-      setupOrderExercise();
     });
   });
 }
 
 function renderLibrary() {
-  const song = SONGS.find(item => item.id === currentSongId) || SONGS[0];
+  const song = SONGS.find(item => item.id === currentSongId) || SONGS;
   $("#songTitle").textContent = song.title;
   $("#songArtist").textContent = song.artist;
   $("#englishLyrics").textContent = song.english;
   $("#spanishLyrics").textContent = song.spanish;
-
-  const libraryVideo = $("#librarySongVideo");
-  const libraryVideoPlaceholder = $("#libraryVideoPlaceholder");
-  libraryVideo.pause();
-  if (song.videoSrc && song.videoSrc.trim()) {
-    libraryVideo.src = song.videoSrc;
-    libraryVideo.hidden = false;
-    libraryVideoPlaceholder.hidden = true;
-    libraryVideo.load();
-  } else {
-    libraryVideo.pause();
-    libraryVideo.removeAttribute("src");
-    libraryVideo.load();
-    libraryVideo.hidden = true;
-    libraryVideoPlaceholder.hidden = false;
-  }
   $("#glossaryList").innerHTML = song.vocabulary.map(item => `
     <div class="glossary-item"><strong>${escapeHTML(item.word)}</strong><span>${escapeHTML(item.definition)}</span></div>
   `).join("");
+
+  const libVideo = $("#librarySongVideo");
+  const libPlaceholder = $("#libraryVideoPlaceholder");
+  if (song.video && song.video.trim()) {
+    libVideo.src = song.video;
+    libVideo.load();
+    libVideo.hidden = false;
+    libVideo.style.display = "block";
+    libPlaceholder.hidden = true;
+  } else {
+    libVideo.removeAttribute("src");
+    libVideo.hidden = true;
+    libVideo.style.display = "none";
+    libPlaceholder.hidden = false;
+  }
+
   renderSongList();
 }
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-  })[char]);
-}
-
-function setupQuestionVideo(source) {
+// 2. Rellenar Espacios
+function loadQuestionVideo(videoPath) {
   const video = $("#songVideo");
   const placeholder = $("#videoPlaceholder");
-  video.pause();
-  if (source && source.trim()) {
-    video.src = source;
-    video.style.display = "block";
-    placeholder.hidden = true;
+  if (videoPath && videoPath.trim()) {
+    video.src = videoPath;
     video.load();
+    placeholder.hidden = true;
+    video.style.display = "block";
   } else {
     video.removeAttribute("src");
     video.load();
@@ -172,15 +173,16 @@ function setupQuestionVideo(source) {
 
 function renderQuestion() {
   const question = QUIZ_QUESTIONS[questionIndex];
-  setupQuestionVideo(question.videoSrc || "");
   answeredCurrent = false;
+  loadQuestionVideo(question.video);
+
   $("#questionCounter").textContent = `PREGUNTA ${questionIndex + 1} / ${QUIZ_QUESTIONS.length}`;
   $("#questionPrompt").textContent = "¿Qué palabra falta en el fragmento?";
-  $("#lyricPrompt").innerHTML = `${escapeHTML(question.prompt.slice(0, question.prompt.lastIndexOf(" "))) } <b>_____</b>`;
+  $("#lyricPrompt").innerHTML = escapeHTML(question.prompt).replace("_____", "<b>_____</b>");
   $("#answerFeedback").textContent = "";
   $("#answerFeedback").className = "feedback";
   $("#nextQuestion").disabled = true;
-  $("#nextQuestion").textContent = questionIndex === QUIZ_QUESTIONS.length - 1 ? "Ver resultado ✓" : "Siguiente pregunta →";
+  $("#nextQuestion").innerHTML = questionIndex === QUIZ_QUESTIONS.length - 1 ? "Ver resultado ✓" : "Siguiente pregunta <span>→</span>";
   $("#answerOptions").innerHTML = question.options.map(option => `
     <button class="option-button" type="button" data-option="${escapeHTML(option)}">${escapeHTML(option)}</button>
   `).join("");
@@ -242,211 +244,114 @@ function restartQuiz() {
   $("#rewardMessage").textContent = "🌟 ¡Tú puedes!";
 }
 
-function getCurrentOrderExercises() {
-  const song = SONGS.find(item => item.id === currentSongId) || SONGS[0];
-  return Array.isArray(song.orderExercises) ? song.orderExercises : [];
-}
-
-function setupOrderExercise() {
-  const exercises = getCurrentOrderExercises();
-  orderExerciseIndex = 0;
-  orderExerciseCompleted = false;
-  if (!exercises.length) {
-    const video = $("#verseVideo");
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
-    video.style.display = "none";
-    $("#orderVideoPlaceholder").hidden = false;
-    $("#orderVideoPlaceholder").querySelector("strong").textContent = "No hay incisos configurados";
-    $("#orderVideoPlaceholder").querySelector("small").textContent = "Agrega orderExercises a esta canción en app.js";
-    $("#orderIncisoCounter").textContent = "SIN INCISOS";
-    $("#orderInstruction").textContent = "Esta canción todavía no tiene ejercicios para ordenar.";
-    bankWords = [];
-    answerWords = [];
-    renderWordAreas();
-    $("#checkOrder").disabled = true;
-    $("#nextOrderExercise").hidden = true;
-    $("#orderFeedback").textContent = "";
-    return;
-  }
-  $("#checkOrder").disabled = false;
-  renderOrderExercise();
-}
-
+// 3. Ordenar Versos (con Video)
 function renderOrderExercise() {
-  const exercises = getCurrentOrderExercises();
-  const exercise = exercises[orderExerciseIndex];
-  if (!exercise) return;
-  const video = $("#verseVideo");
-  video.pause();
-  if (exercise.videoSrc && exercise.videoSrc.trim()) {
-    video.src = exercise.videoSrc;
-    video.style.display = "block";
-    $("#orderVideoPlaceholder").hidden = true;
-    video.load();
+  const ex = ORDER_EXERCISES[orderIndex];
+  const letras = ["A", "B", "C", "D", "E"];
+  $("#orderIncisoCounter").textContent = `INCISO ${letras[orderIndex] || orderIndex + 1} / ${ORDER_EXERCISES.length}`;
+  $("#orderInstruction").textContent = ex.instruction;
+
+  const verseVideo = $("#verseVideo");
+  const orderPlaceholder = $("#orderVideoPlaceholder");
+  if (ex.video && ex.video.trim()) {
+    verseVideo.src = ex.video;
+    verseVideo.load();
+    verseVideo.style.display = "block";
+    orderPlaceholder.hidden = true;
   } else {
-    video.removeAttribute("src");
-    video.load();
-    video.style.display = "none";
-    $("#orderVideoPlaceholder").hidden = false;
-    $("#orderVideoPlaceholder").querySelector("strong").textContent = "Your video goes here";
-    $("#orderVideoPlaceholder").querySelector("small").textContent = "Agrega un video para este inciso en app.js";
+    verseVideo.removeAttribute("src");
+    verseVideo.style.display = "none";
+    orderPlaceholder.hidden = false;
   }
-  $("#orderIncisoCounter").textContent = `INCISO ${exercise.label || String.fromCharCode(65 + orderExerciseIndex)} / ${exercises.length}`;
-  $("#orderInstruction").textContent = exercise.instruction || "Toca una nube para añadirla a tu frase. Toca una palabra de tu respuesta para devolverla.";
-  const words = exercise.sentence.trim().split(/\s+/);
-  bankWords = words.map((word, index) => ({ id: `w${index}`, word }));
-  // Mezcla las palabras para que el estudiante tenga que ordenarlas.
-  for (let i = bankWords.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [bankWords[i], bankWords[j]] = [bankWords[j], bankWords[i]];
-  }
-  answerWords = [];
-  orderExerciseCompleted = false;
-  $("#orderFeedback").textContent = "";
-  $("#orderFeedback").className = "feedback";
-  $("#checkOrder").disabled = false;
+
   $("#nextOrderExercise").hidden = true;
-  renderWordAreas();
-}
-
-function nextOrderExercise() {
-  const exercises = getCurrentOrderExercises();
-  if (!orderExerciseCompleted) return;
-  if (orderExerciseIndex < exercises.length - 1) {
-    orderExerciseIndex++;
-    renderOrderExercise();
-  } else {
-    $("#orderFeedback").textContent = "¡Terminaste todos los incisos de esta canción! 🎉";
-    $("#orderFeedback").className = "feedback";
-    $("#nextOrderExercise").hidden = true;
-    $("#nextOrderExercise").textContent = "Actividad completada ✓";
-  }
-}
-
-function createWordButton(item, location) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "cloud-word";
-  button.draggable = true;
-  button.dataset.wordId = item.id;
-  const span = document.createElement("span");
-  span.textContent = item.word;
-  button.appendChild(span);
-  button.addEventListener("click", () => moveWord(item.id, location));
-  button.addEventListener("dragstart", event => {
-    draggedWordId = item.id;
-    event.dataTransfer.setData("text/plain", item.id);
-    event.dataTransfer.effectAllowed = "move";
-  });
-  return button;
-}
-
-function renderWordAreas() {
-  const bank = $("#wordBank");
-  const zone = $("#answerZone");
-  bank.innerHTML = "";
-  zone.innerHTML = "";
-  bankWords.forEach(item => bank.appendChild(createWordButton(item, "bank")));
-  answerWords.forEach(item => zone.appendChild(createWordButton(item, "answer")));
-  if (answerWords.length === 0) {
-    const hint = document.createElement("span");
-    hint.className = "drop-hint";
-    hint.textContent = "Toca o arrastra las palabras aquí…";
-    zone.appendChild(hint);
-  }
-  $("#wordCount").textContent = `${answerWords.length} palabra${answerWords.length === 1 ? "" : "s"}`;
-}
-
-function moveWord(id, from) {
-  const source = from === "bank" ? bankWords : answerWords;
-  const destination = from === "bank" ? answerWords : bankWords;
-  const index = source.findIndex(item => item.id === id);
-  if (index < 0) return;
-  destination.push(source.splice(index, 1)[0]);
-  renderWordAreas();
-}
-
-function enableDropZone(zone, destination) {
-  zone.addEventListener("dragover", event => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
-  });
-  zone.addEventListener("drop", event => {
-    event.preventDefault();
-    const id = event.dataTransfer.getData("text/plain") || draggedWordId;
-    if (!id) return;
-    const source = destination === "answer" ? bankWords : answerWords;
-    const target = destination === "answer" ? answerWords : bankWords;
-    const index = source.findIndex(item => item.id === id);
-    if (index >= 0) {
-      target.push(source.splice(index, 1)[0]);
-      renderWordAreas();
-    }
-    draggedWordId = null;
-  });
-}
-
-function checkOrder() {
-  const feedback = $("#orderFeedback");
-  const exercises = getCurrentOrderExercises();
-  const exercise = exercises[orderExerciseIndex];
-  if (!exercise) return;
-  const correct = exercise.sentence.trim().split(/\s+/);
-  const attempt = answerWords.map(item => item.word);
-  if (attempt.length !== correct.length) {
-    feedback.textContent = "Primero coloca todas las palabras en tu oración.";
-    feedback.className = "feedback error";
-    return;
-  }
-  if (attempt.every((word, index) => word === correct[index])) {
-    orderExerciseCompleted = true;
-    feedback.textContent = "¡Perfecto! 🎉 Has ordenado el inciso correctamente.";
-    feedback.className = "feedback";
-    $("#checkOrder").disabled = true;
-    $("#nextOrderExercise").hidden = false;
-    $("#nextOrderExercise").textContent = orderExerciseIndex === exercises.length - 1 ? "Finalizar actividad ✓" : "Siguiente inciso →";
-  } else {
-    feedback.textContent = "Aún no está en el orden correcto. ¡Prueba otra vez!";
-    feedback.className = "feedback error";
-  }
+  clearOrder();
 }
 
 function clearOrder() {
-  bankWords = answerWords.concat(bankWords);
+  const ex = ORDER_EXERCISES[orderIndex];
+  bankWords = ex.words.map((text, idx) => ({ id: `w-${idx}`, text }));
   answerWords = [];
-  renderWordAreas();
   $("#orderFeedback").textContent = "";
   $("#orderFeedback").className = "feedback";
+  renderClouds();
 }
 
-function initMenu() {
-  const toggle = $("#menuToggle");
-  const nav = $("#mainNav");
-  toggle.addEventListener("click", () => {
-    const isOpen = nav.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", String(isOpen));
-    toggle.textContent = isOpen ? "×" : "☰";
-  });
-  nav.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-    nav.classList.remove("open");
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.textContent = "☰";
-  }));
-}
+function renderClouds() {
+  const bankEl = $("#wordBank");
+  const answerEl = $("#answerZone");
 
+$("#wordCount").textContent = ${answerWords.length} ${answerWords.length === 1 ? "palabra" : "palabras"};
+bankEl.innerHTML = bankWords.map(w => <button type="button" class="cloud-word word-chip" draggable="true" data-id="${w.id}" data-from="bank">${escapeHTML(w.text)}</button>).join("");
+answerEl.innerHTML = answerWords.length
+? answerWords.map(w => <button type="button" class="cloud-word word-chip placed" draggable="true" data-id="${w.id}" data-from="answer">${escapeHTML(w.text)}</button>).join("")
+: <span class="drop-hint">Toca o arrastra las palabras aquí…</span>;
+document.querySelectorAll(".cloud-word").forEach(btn => {
+btn.addEventListener("click", () => {
+const id = btn.dataset.id;
+const from = btn.dataset.from;
+if (from === "bank") {
+const idx = bankWords.findIndex(w => w.id === id);
+if (idx > -1) answerWords.push(bankWords.splice(idx, 1));
+} else {
+const idx = answerWords.findIndex(w => w.id === id);
+if (idx > -1) bankWords.push(answerWords.splice(idx, 1));
+}
+renderClouds();
+});
+btn.addEventListener("dragstart", () => {
+draggedWordId = btn.dataset.id;
+});
+});
+[bankEl, answerEl].forEach(zone => {
+zone.ondragover = (e) => e.preventDefault();
+zone.ondrop = (e) => {
+e.preventDefault();
+if (!draggedWordId) return;
+const targetIsAnswer = zone.id === "answerZone";
+const inBankIdx = bankWords.findIndex(w => w.id === draggedWordId);
+const inAnsIdx = answerWords.findIndex(w => w.id === draggedWordId);
+if (targetIsAnswer && inBankIdx > -1) {
+answerWords.push(bankWords.splice(inBankIdx, 1));
+} else if (!targetIsAnswer && inAnsIdx > -1) {
+bankWords.push(answerWords.splice(inAnsIdx, 1));
+}
+draggedWordId = null;
+renderClouds();
+};
+});
+}
+function checkOrder() {
+const ex = ORDER_EXERCISES[orderIndex];
+const userSentence = answerWords.map(w => w.text).join(" ");
+const correctSentence = ex.correct.join(" ");
+if (userSentence === correctSentence) {
+points += 15;
+updateProgress();
+$("#orderFeedback").textContent = "¡Perfecto! +15 puntos. Ordenaste el verso correctamente.";
+$("#orderFeedback").className = "feedback";
+if (orderIndex < ORDER_EXERCISES.length - 1) {
+$("#nextOrderExercise").hidden = false;
+}
+} else {
+$("#orderFeedback").textContent = "Aún no coincide. Mira de nuevo el video y revisa el orden.";
+$("#orderFeedback").className = "feedback error";
+}
+}
+function nextOrderExercise() {
+if (orderIndex < ORDER_EXERCISES.length - 1) {
+orderIndex++;
+renderOrderExercise();
+}
+}
 document.addEventListener("DOMContentLoaded", () => {
-  $("#currentYear").textContent = new Date().getFullYear();
-  renderLibrary();
-  renderQuestion();
-  setupOrderExercise();
-  enableDropZone($("#answerZone"), "answer");
-  enableDropZone($("#wordBank"), "bank");
-  $("#nextQuestion").addEventListener("click", nextQuestion);
-  $("#restartQuiz").addEventListener("click", restartQuiz);
-  $("#checkOrder").addEventListener("click", checkOrder);
-  $("#clearOrder").addEventListener("click", clearOrder);
-  $("#nextOrderExercise").addEventListener("click", nextOrderExercise);
-  initMenu();
+setupHeaderAndFooter();
+renderLibrary();
+renderQuestion();
+renderOrderExercise();
+$("#nextQuestion").addEventListener("click", nextQuestion);
+$("#restartQuiz").addEventListener("click", restartQuiz);
+$("#checkOrder").addEventListener("click", checkOrder);
+$("#clearOrder").addEventListener("click", clearOrder);
+$("#nextOrderExercise").addEventListener("click", nextOrderExercise);
 });
