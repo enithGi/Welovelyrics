@@ -2,7 +2,7 @@
   WELOVELYRICS — DATOS EDITABLES
   1) Canciones y glosario: edita SONGS.
   2) Preguntas: edita QUIZ_QUESTIONS (3 preguntas de ejemplo).
-  3) Archivos propios: coloca tus archivos en /media y cambia VIDEO_SRC / AUDIO_SRC.
+  3) Videos propios: coloca tus archivos MP4 en /media y cambia las rutas videoSrc / ORDER_VIDEO_SRC.
   No necesitas API ni servicios externos.
 */
 
@@ -12,6 +12,7 @@ const SONGS = [
     id: "twinkle",
     title: "Twinkle, Twinkle, Little Star",
     artist: "Traditional nursery rhyme · Public domain",
+    videoSrc: "media/twinkle-completa.mp4", // Video musical completo que acompaña la letra.
     english: [
       "Twinkle, twinkle, little star,",
       "How I wonder what you are!",
@@ -28,59 +29,67 @@ const SONGS = [
       { word: "twinkle", definition: "To shine with a small, quick light." },
       { word: "wonder", definition: "To think about something and want to know more." },
       { word: "above", definition: "In a higher place than something else." }
+    ],
+    orderExercises: [
+      {
+        label: "A",
+        sentence: "Twinkle twinkle little star",
+        videoSrc: "media/twinkle-ordenar.mp4",
+        instruction: "Ordena las palabras para formar el verso."
+      }
     ]
   },
   {
     id: "sample",
     title: "My Little Sunshine",
     artist: "Texto de ejemplo original · Puedes reemplazarlo",
+    videoSrc: "", // Ejemplo: "media/my-little-sunshine.mp4"
     english: "You bring a little light\\nYou make the day feel bright\\nWe sing and learn together\\nAnd make our dreams take flight.",
     spanish: "Traes un poquito de luz\\nHaces que el día brille\\nCantamos y aprendemos juntos\\nY hacemos volar nuestros sueños.",
     vocabulary: [
       { word: "bring", definition: "To take or carry something to a person or place." },
       { word: "bright", definition: "Full of light; easy to see." },
       { word: "together", definition: "With or near another person or people." }
+    ],
+    // Ejemplo: esta canción tiene tres incisos. Puedes agregar o quitar objetos.
+    orderExercises: [
+      { label: "A", sentence: "You bring a little light", videoSrc: "media/sol-inciso-a.mp4" },
+      { label: "B", sentence: "You make the day feel bright", videoSrc: "media/sol-inciso-b.mp4" },
+      { label: "C", sentence: "We sing and learn together", videoSrc: "media/sol-inciso-c.mp4" }
     ]
   }
 ];
 
 // ---------- 2. ACTIVIDAD DE RELLENAR ESPACIOS ----------
-// Pon los videos en la carpeta media y escribe aquí la ruta, por ejemplo:
-// const VIDEO_SRC = "media/mi-cancion.mp4";
-const VIDEO_SRC = ""; // Vacío = muestra el espacio de video sin archivo.
+// Cada pregunta tiene su propio videoSrc. Coloca los tres videos en media.
 
 const QUIZ_QUESTIONS = [
   {
     prompt: "Twinkle, twinkle, little _____",
+    videoSrc: "media/pregunta-1.mp4", // Video exclusivo de la pregunta 1.
     answer: "star",
     options: ["star", "car", "book", "tree"],
     definition: "A star is a large ball of hot gas in space that gives light."
   },
   {
     prompt: "How I _____ what you are!",
+    videoSrc: "media/pregunta-2.mp4", // Video exclusivo de la pregunta 2.
     answer: "wonder",
     options: ["wonder", "dance", "sleep", "open"],
     definition: "To wonder means to think about something because you want to know more."
   },
   {
     prompt: "Like a diamond in the _____.",
+    videoSrc: "media/pregunta-3.mp4", // Video exclusivo de la pregunta 3.
     answer: "sky",
     options: ["water", "sky", "garden", "room"],
     definition: "The sky is the space above the Earth where we see the sun, moon and stars."
   }
 ];
 
-// ---------- 3. ACTIVIDAD DE ORDENAR VERSOS ----------
-// Pon tu audio en media y cambia la ruta, por ejemplo:
-// const AUDIO_SRC = "media/mi-fragmento.mp3";
-const AUDIO_SRC = ""; // Vacío = el reproductor queda preparado, sin audio cargado.
-
-const ORDER_EXERCISE = {
-  words: ["little", "star", "Twinkle", "twinkle"],
-  correct: ["Twinkle", "twinkle", "little", "star"],
-  // Ejemplo de verso de dominio público. Puedes cambiarlo por una frase propia.
-  instruction: "Ordena las palabras para formar el verso."
-};
+// ---------- 3. ACTIVIDAD DE ORDENAR VERSOS CON VIDEO ----------
+// Cada canción define sus propios orderExercises dentro de SONGS.
+// Cada inciso puede tener: label, sentence, videoSrc e instruction.
 
 // ---------- LÓGICA DE LA APLICACIÓN ----------
 const $ = (selector) => document.querySelector(selector);
@@ -91,6 +100,8 @@ let answeredCurrent = false;
 let bankWords = [];
 let answerWords = [];
 let draggedWordId = null;
+let orderExerciseIndex = 0;
+let orderExerciseCompleted = false;
 
 function renderSongList() {
   $("#songCount").textContent = SONGS.length;
@@ -103,6 +114,7 @@ function renderSongList() {
     button.addEventListener("click", () => {
       currentSongId = button.dataset.song;
       renderLibrary();
+      setupOrderExercise();
     });
   });
 }
@@ -113,6 +125,22 @@ function renderLibrary() {
   $("#songArtist").textContent = song.artist;
   $("#englishLyrics").textContent = song.english;
   $("#spanishLyrics").textContent = song.spanish;
+
+  const libraryVideo = $("#librarySongVideo");
+  const libraryVideoPlaceholder = $("#libraryVideoPlaceholder");
+  libraryVideo.pause();
+  if (song.videoSrc && song.videoSrc.trim()) {
+    libraryVideo.src = song.videoSrc;
+    libraryVideo.hidden = false;
+    libraryVideoPlaceholder.hidden = true;
+    libraryVideo.load();
+  } else {
+    libraryVideo.pause();
+    libraryVideo.removeAttribute("src");
+    libraryVideo.load();
+    libraryVideo.hidden = true;
+    libraryVideoPlaceholder.hidden = false;
+  }
   $("#glossaryList").innerHTML = song.vocabulary.map(item => `
     <div class="glossary-item"><strong>${escapeHTML(item.word)}</strong><span>${escapeHTML(item.definition)}</span></div>
   `).join("");
@@ -125,22 +153,26 @@ function escapeHTML(value) {
   })[char]);
 }
 
-function setupVideo() {
+function setupQuestionVideo(source) {
   const video = $("#songVideo");
-  if (VIDEO_SRC.trim()) {
-    video.src = VIDEO_SRC;
-    $("#videoPlaceholder").hidden = true;
+  const placeholder = $("#videoPlaceholder");
+  video.pause();
+  if (source && source.trim()) {
+    video.src = source;
     video.style.display = "block";
+    placeholder.hidden = true;
+    video.load();
   } else {
     video.removeAttribute("src");
     video.load();
     video.style.display = "none";
-    $("#videoPlaceholder").hidden = false;
+    placeholder.hidden = false;
   }
 }
 
 function renderQuestion() {
   const question = QUIZ_QUESTIONS[questionIndex];
+  setupQuestionVideo(question.videoSrc || "");
   answeredCurrent = false;
   $("#questionCounter").textContent = `PREGUNTA ${questionIndex + 1} / ${QUIZ_QUESTIONS.length}`;
   $("#questionPrompt").textContent = "¿Qué palabra falta en el fragmento?";
@@ -210,17 +242,87 @@ function restartQuiz() {
   $("#rewardMessage").textContent = "🌟 ¡Tú puedes!";
 }
 
+function getCurrentOrderExercises() {
+  const song = SONGS.find(item => item.id === currentSongId) || SONGS[0];
+  return Array.isArray(song.orderExercises) ? song.orderExercises : [];
+}
+
 function setupOrderExercise() {
-  const audio = $("#verseAudio");
-  if (AUDIO_SRC.trim()) {
-    audio.src = AUDIO_SRC;
-  } else {
-    audio.removeAttribute("src");
-    audio.load();
+  const exercises = getCurrentOrderExercises();
+  orderExerciseIndex = 0;
+  orderExerciseCompleted = false;
+  if (!exercises.length) {
+    const video = $("#verseVideo");
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    video.style.display = "none";
+    $("#orderVideoPlaceholder").hidden = false;
+    $("#orderVideoPlaceholder").querySelector("strong").textContent = "No hay incisos configurados";
+    $("#orderVideoPlaceholder").querySelector("small").textContent = "Agrega orderExercises a esta canción en app.js";
+    $("#orderIncisoCounter").textContent = "SIN INCISOS";
+    $("#orderInstruction").textContent = "Esta canción todavía no tiene ejercicios para ordenar.";
+    bankWords = [];
+    answerWords = [];
+    renderWordAreas();
+    $("#checkOrder").disabled = true;
+    $("#nextOrderExercise").hidden = true;
+    $("#orderFeedback").textContent = "";
+    return;
   }
-  bankWords = ORDER_EXERCISE.words.map((word, index) => ({ id: `w${index}`, word }));
+  $("#checkOrder").disabled = false;
+  renderOrderExercise();
+}
+
+function renderOrderExercise() {
+  const exercises = getCurrentOrderExercises();
+  const exercise = exercises[orderExerciseIndex];
+  if (!exercise) return;
+  const video = $("#verseVideo");
+  video.pause();
+  if (exercise.videoSrc && exercise.videoSrc.trim()) {
+    video.src = exercise.videoSrc;
+    video.style.display = "block";
+    $("#orderVideoPlaceholder").hidden = true;
+    video.load();
+  } else {
+    video.removeAttribute("src");
+    video.load();
+    video.style.display = "none";
+    $("#orderVideoPlaceholder").hidden = false;
+    $("#orderVideoPlaceholder").querySelector("strong").textContent = "Your video goes here";
+    $("#orderVideoPlaceholder").querySelector("small").textContent = "Agrega un video para este inciso en app.js";
+  }
+  $("#orderIncisoCounter").textContent = `INCISO ${exercise.label || String.fromCharCode(65 + orderExerciseIndex)} / ${exercises.length}`;
+  $("#orderInstruction").textContent = exercise.instruction || "Toca una nube para añadirla a tu frase. Toca una palabra de tu respuesta para devolverla.";
+  const words = exercise.sentence.trim().split(/\s+/);
+  bankWords = words.map((word, index) => ({ id: `w${index}`, word }));
+  // Mezcla las palabras para que el estudiante tenga que ordenarlas.
+  for (let i = bankWords.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [bankWords[i], bankWords[j]] = [bankWords[j], bankWords[i]];
+  }
   answerWords = [];
+  orderExerciseCompleted = false;
+  $("#orderFeedback").textContent = "";
+  $("#orderFeedback").className = "feedback";
+  $("#checkOrder").disabled = false;
+  $("#nextOrderExercise").hidden = true;
   renderWordAreas();
+}
+
+function nextOrderExercise() {
+  const exercises = getCurrentOrderExercises();
+  if (!orderExerciseCompleted) return;
+  if (orderExerciseIndex < exercises.length - 1) {
+    orderExerciseIndex++;
+    renderOrderExercise();
+  } else {
+    $("#orderFeedback").textContent = "¡Terminaste todos los incisos de esta canción! 🎉";
+    $("#orderFeedback").className = "feedback";
+    $("#nextOrderExercise").hidden = true;
+    $("#nextOrderExercise").textContent = "Actividad completada ✓";
+  }
 }
 
 function createWordButton(item, location) {
@@ -288,15 +390,23 @@ function enableDropZone(zone, destination) {
 
 function checkOrder() {
   const feedback = $("#orderFeedback");
+  const exercises = getCurrentOrderExercises();
+  const exercise = exercises[orderExerciseIndex];
+  if (!exercise) return;
+  const correct = exercise.sentence.trim().split(/\s+/);
   const attempt = answerWords.map(item => item.word);
-  if (attempt.length !== ORDER_EXERCISE.correct.length) {
+  if (attempt.length !== correct.length) {
     feedback.textContent = "Primero coloca todas las palabras en tu oración.";
     feedback.className = "feedback error";
     return;
   }
-  if (attempt.every((word, index) => word === ORDER_EXERCISE.correct[index])) {
-    feedback.textContent = "¡Perfecto! 🎉 Has ordenado el verso correctamente.";
+  if (attempt.every((word, index) => word === correct[index])) {
+    orderExerciseCompleted = true;
+    feedback.textContent = "¡Perfecto! 🎉 Has ordenado el inciso correctamente.";
     feedback.className = "feedback";
+    $("#checkOrder").disabled = true;
+    $("#nextOrderExercise").hidden = false;
+    $("#nextOrderExercise").textContent = orderExerciseIndex === exercises.length - 1 ? "Finalizar actividad ✓" : "Siguiente inciso →";
   } else {
     feedback.textContent = "Aún no está en el orden correcto. ¡Prueba otra vez!";
     feedback.className = "feedback error";
@@ -329,7 +439,6 @@ function initMenu() {
 document.addEventListener("DOMContentLoaded", () => {
   $("#currentYear").textContent = new Date().getFullYear();
   renderLibrary();
-  setupVideo();
   renderQuestion();
   setupOrderExercise();
   enableDropZone($("#answerZone"), "answer");
@@ -338,5 +447,6 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#restartQuiz").addEventListener("click", restartQuiz);
   $("#checkOrder").addEventListener("click", checkOrder);
   $("#clearOrder").addEventListener("click", clearOrder);
+  $("#nextOrderExercise").addEventListener("click", nextOrderExercise);
   initMenu();
 });

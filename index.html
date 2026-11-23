@@ -60,19 +60,26 @@
         <span class="card-decoration">?</span>
       </a>
       <a class="feature-card feature-order" href="#ordenar">
-        <div class="feature-icon">☁</div><span class="feature-number">03 / PLAY</span>
-        <h3>Ordenar<br>versos</h3><p>Organiza las palabras y reconstruye una oración musical.</p><span class="feature-link">Ordenar palabras <b>↗</b></span>
+        <div class="feature-icon">▶</div><span class="feature-number">03 / WATCH & BUILD</span>
+        <h3>Ordenar<br>versos</h3><p>Mira el video y organiza las palabras para reconstruir el verso.</p><span class="feature-link">Ordenar palabras <b>↗</b></span>
         <span class="card-decoration">✳</span>
       </a>
     </section>
 
     <section class="content-section library-section" id="biblioteca">
-      <div class="section-heading"><div><p class="eyebrow">01 — READ & DISCOVER</p><h2>Biblioteca <span>Musical</span></h2></div><p>Explora la letra, su traducción y el vocabulario clave.</p></div>
+      <div class="section-heading"><div><p class="eyebrow">01 — READ & DISCOVER</p><h2>Biblioteca <span>Musical</span></h2></div><p>Lee la letra en ambos idiomas, mira el video musical completo y aprende el vocabulario clave.</p></div>
       <div class="library-layout">
         <aside class="song-list-panel"><h3>Mis canciones <span id="songCount">2</span></h3><div id="songList" class="song-list"></div></aside>
         <article class="lyrics-panel">
           <div class="lyrics-top"><div><span class="tag">ENGLISH + ESPAÑOL</span><h3 id="songTitle">Twinkle, Twinkle, Little Star</h3><p id="songArtist">Traditional nursery rhyme</p></div><span class="music-stamp">♫</span></div>
           <div class="lyrics-columns"><div><h4>ENGLISH</h4><div id="englishLyrics" class="lyrics-text"></div></div><div><h4>ESPAÑOL</h4><div id="spanishLyrics" class="lyrics-text"></div></div></div>
+          <div class="library-video-player">
+            <div class="library-video-heading"><div><strong>Video musical completo</strong><span>Mira y escucha la canción mientras lees la letra</span></div><span class="video-badge">♫ WATCH & LISTEN</span></div>
+            <div class="library-video-frame">
+              <video id="librarySongVideo" controls preload="metadata" playsinline aria-label="Video musical completo" hidden></video>
+              <div id="libraryVideoPlaceholder" class="library-video-placeholder"><span class="play-orb">▶</span><strong>Tu video musical aparecerá aquí</strong><small>Agrega el archivo MP4 de esta canción en la carpeta media.</small></div>
+            </div>
+          </div>
           <div class="glossary"><div class="glossary-heading"><h4>VOCABULARY BOOST</h4><span>KEY WORDS</span></div><div id="glossaryList" class="glossary-list"></div></div>
         </article>
       </div>
@@ -99,14 +106,14 @@
     </section>
 
     <section class="content-section order-section" id="ordenar">
-      <div class="section-heading"><div><p class="eyebrow">03 — LISTEN & BUILD</p><h2>Ordenar <span>versos</span></h2></div><p>Escucha el audio y organiza las nubes para formar el verso correcto.</p></div>
+      <div class="section-heading"><div><p class="eyebrow">03 — LISTEN & BUILD</p><h2>Ordenar <span>versos</span></h2></div><p>Mira el video y organiza las nubes para formar el verso correcto.</p></div>
       <div class="order-card">
-        <div class="order-left"><span class="tag tag-yellow">WORD PUZZLE</span><h3>Build the sentence!</h3><p class="order-instruction">Toca una nube para añadirla a tu frase. Toca una palabra de tu respuesta para devolverla. También puedes arrastrarlas.</p>
-          <div class="audio-player"><div class="audio-icon">♫</div><div class="audio-info"><strong>Listen carefully</strong><span>Fragmento de práctica</span></div><audio id="verseAudio" controls preload="metadata"></audio></div>
-          <p class="media-hint">Audio de ejemplo incluido como espacio preparado. Cambia la ruta por tu archivo.</p>
+        <div class="order-left"><div class="order-topline"><span class="tag tag-yellow">WORD PUZZLE</span><span class="question-counter" id="orderIncisoCounter">INCISO A / 1</span></div><h3>Build the sentence!</h3><p class="order-instruction" id="orderInstruction">Toca una nube para añadirla a tu frase. Toca una palabra de tu respuesta para devolverla. También puedes arrastrarlas.</p>
+          <div class="order-video-frame" id="orderVideoFrame"><video id="verseVideo" controls preload="metadata" aria-label="Video para ordenar versos"></video><div class="order-video-placeholder" id="orderVideoPlaceholder"><span class="play-orb">▶</span><strong>Your video goes here</strong><small>Agrega tu segundo video en app.js</small></div></div>
+          <p class="media-hint">Agrega un video MP4 en la carpeta <code>media</code> y cambia su ruta en app.js.</p>
           <div class="word-area"><h4>WORD CLOUD</h4><div id="wordBank" class="word-bank"></div></div>
           <div class="answer-area"><div class="answer-area-heading"><h4>YOUR SENTENCE</h4><span id="wordCount">0 palabras</span></div><div id="answerZone" class="answer-zone"><span class="drop-hint">Toca o arrastra las palabras aquí…</span></div></div>
-          <div class="order-actions"><button class="button button-primary" id="checkOrder">Verificar respuesta ✓</button><button class="button button-light" id="clearOrder">Borrar</button></div>
+          <div class="order-actions"><button class="button button-primary" id="checkOrder">Verificar respuesta ✓</button><button class="button button-light" id="clearOrder">Borrar</button><button class="button button-primary" id="nextOrderExercise" hidden>Siguiente inciso →</button></div>
           <div class="feedback" id="orderFeedback" role="status" aria-live="polite"></div>
         </div>
         <aside class="order-side"><div class="star-illustration">✦</div><p class="eyebrow">MINI CHALLENGE</p><h3>Little steps,<br>big progress.</h3><p>¡Cada palabra que ordenas te ayuda a comprender mejor el inglés!</p><div class="side-doodle">☁　♫　☁</div></aside>
