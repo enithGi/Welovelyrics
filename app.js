@@ -85,6 +85,105 @@ const QUIZ_QUESTIONS = [
     options: ["water", "sky", "garden", "room"],
     definition: "The sky is the space above the Earth where we see the sun, moon and stars."
   }
+
+{
+  id: "old-macdonald",
+  title: "Old MacDonald Had a Farm",
+  artist: "Traditional nursery rhyme · Public domain",
+  videoSrc: "", // Agrega aquí el video completo si lo tienes.
+  english: [
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "And on his farm he had a cow, E-I-E-I-O",
+    "With a moo-moo here and a moo-moo there",
+    "Here a moo, there a moo, everywhere a moo-moo",
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "",
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "And on his farm he had a chicken, E-I-E-I-O",
+    "With a cluck-cluck here and a cluck-cluck there",
+    "Here a cluck, there a cluck, everywhere a cluck-cluck",
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "",
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "And on his farm he had a sheep, E-I-E-I-O",
+    "With a baa-baa here and a baa-baa there",
+    "Here a baa, there a baa, everywhere a baa-baa",
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "",
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "And on his farm he had a pig, E-I-E-I-O",
+    "With an oink-oink here and an oink-oink there",
+    "Here an oink, there an oink, everywhere an oink-oink",
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "",
+    "Old MacDonald had a farm, E-I-E-I-O",
+    "And on his farm he had a duck, E-I-E-I-O",
+    "With a quack-quack here and a quack-quack there",
+    "Here a quack, there a quack, everywhere a quack-quack",
+    "Old MacDonald had a farm, E-I-E-I-O"
+  ].join("\n"),
+  spanish: [
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "Y en su granja tenía una vaca, i-ai-i-ai-ou",
+    "Con un mu-mu aquí y un mu-mu allá",
+    "Aquí un mu, allá un mu, por todas partes mu-mu",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "Y en su granja tenía una gallina, i-ai-i-ai-ou",
+    "Con un clo-clo aquí y un clo-clo allá",
+    "Aquí un clo, allá un clo, por todas partes clo-clo",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "Y en su granja tenía una oveja, i-ai-i-ai-ou",
+    "Con un bee-bee aquí y un bee-bee allá",
+    "Aquí un bee, allá un bee, por todas partes bee-bee",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "Y en su granja tenía un cerdo, i-ai-i-ai-ou",
+    "Con un oinc-oinc aquí y un oinc-oinc allá",
+    "Aquí un oinc, allá un oinc, por todas partes oinc-oinc",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou",
+    "Y en su granja tenía un pato, i-ai-i-ai-ou",
+    "Con un cuac-cuac aquí y un cuac-cuac allá",
+    "Aquí un cuac, allá un cuac, por todas partes cuac-cuac",
+    "El viejo MacDonald tenía una granja, i-ai-i-ai-ou"
+  ].join("\n"),
+  vocabulary: [
+    {
+      word: "farm",
+      definition: "A place where people grow crops and keep animals."
+    },
+    {
+      word: "cow",
+      definition: "A large farm animal that gives milk."
+    },
+    {
+      word: "sheep",
+      definition: "A farm animal with wool."
+    },
+    {
+      word: "chicken",
+      definition: "A farm bird that lays eggs."
+    },
+    {
+      word: "duck",
+      definition: "A bird that can swim and has a flat beak."
+    }
+  ],
+  orderExercises: [
+    {
+      label: "A",
+      sentence: "The cow goes moo",
+      videoSrc: "media/farm-nubes.mp3",
+      instruction: "Put the words in the correct order."
+    }
+  ]
+}
 ];
 
 // ---------- 3. ACTIVIDAD DE ORDENAR VERSOS CON VIDEO ----------
