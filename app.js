@@ -1,5 +1,5 @@
 /*
-  WELOVELYRICS — CONECTADO A TU NUEVO HTML Y CARPETA /media
+  WELOVELYRICS — CORREGIDO Y CONECTADO A /media
 */
 
 // ---------- 1. BIBLIOTECA MUSICAL ----------
@@ -8,7 +8,7 @@ const SONGS = [
     id: "twinkle",
     title: "Twinkle, Twinkle, Little Star",
     artist: "Traditional nursery rhyme · Public domain",
-    video: "", // Si luego subes la canción completa, pon aquí: "media/twinkle-completa.mp4"
+    video: "", // Si luego subes la canción completa, pon: "media/twinkle-completa.mp4"
     english: [
       "Twinkle, twinkle, little star,",
       "How I wonder what you are!",
@@ -79,7 +79,7 @@ const ORDER_EXERCISES = [
 
 // ---------- LÓGICA DE LA APLICACIÓN ----------
 const $ = (selector) => document.querySelector(selector);
-let currentSongId = SONGS.id;
+let currentSongId = SONGS[0].id;
 let questionIndex = 0;
 let orderIndex = 0;
 let points = 0;
@@ -94,7 +94,6 @@ function escapeHTML(value) {
   })[char]);
 }
 
-// Menú móvil y año
 function setupHeaderAndFooter() {
   const menuToggle = $("#menuToggle");
   const mainNav = $("#mainNav");
@@ -110,7 +109,6 @@ function setupHeaderAndFooter() {
   }
 }
 
-// 1. Biblioteca Musical
 function renderSongList() {
   $("#songCount").textContent = SONGS.length;
   $("#songList").innerHTML = SONGS.map(song => `
@@ -127,7 +125,7 @@ function renderSongList() {
 }
 
 function renderLibrary() {
-  const song = SONGS.find(item => item.id === currentSongId) || SONGS;
+  const song = SONGS.find(item => item.id === currentSongId) || SONGS[0];
   $("#songTitle").textContent = song.title;
   $("#songArtist").textContent = song.artist;
   $("#englishLyrics").textContent = song.english;
@@ -154,7 +152,6 @@ function renderLibrary() {
   renderSongList();
 }
 
-// 2. Rellenar Espacios
 function loadQuestionVideo(videoPath) {
   const video = $("#songVideo");
   const placeholder = $("#videoPlaceholder");
@@ -244,7 +241,6 @@ function restartQuiz() {
   $("#rewardMessage").textContent = "🌟 ¡Tú puedes!";
 }
 
-// 3. Ordenar Versos (con Video)
 function renderOrderExercise() {
   const ex = ORDER_EXERCISES[orderIndex];
   const letras = ["A", "B", "C", "D", "E"];
@@ -281,8 +277,11 @@ function renderClouds() {
   const bankEl = $("#wordBank");
   const answerEl = $("#answerZone");
 
-$("#wordCount").textContent = ${answerWords.length} ${answerWords.length === 1 ? "palabra" : "palabras"};
-bankEl.innerHTML = bankWords.map(w => <button type="button" class="cloud-word word-chip" draggable="true" data-id="${w.id}" data-from="bank">${escapeHTML(w.text)}</button>).join("");
+  $("#wordCount").textContent = `${answerWords.length} ${answerWords.length === 1 ? "palabra" : "palabras"}`;
+
+  bankEl.innerHTML = bankWords.map(w => `
+${escapeHTML(w.text)}
+`).join("");
 answerEl.innerHTML = answerWords.length
 ? answerWords.map(w => <button type="button" class="cloud-word word-chip placed" draggable="true" data-id="${w.id}" data-from="answer">${escapeHTML(w.text)}</button>).join("")
 : <span class="drop-hint">Toca o arrastra las palabras aquí…</span>;
@@ -292,10 +291,10 @@ const id = btn.dataset.id;
 const from = btn.dataset.from;
 if (from === "bank") {
 const idx = bankWords.findIndex(w => w.id === id);
-if (idx > -1) answerWords.push(bankWords.splice(idx, 1));
+if (idx > -1) answerWords.push(bankWords.splice(idx, 1)[0]);
 } else {
 const idx = answerWords.findIndex(w => w.id === id);
-if (idx > -1) bankWords.push(answerWords.splice(idx, 1));
+if (idx > -1) bankWords.push(answerWords.splice(idx, 1)[0]);
 }
 renderClouds();
 });
@@ -312,9 +311,9 @@ const targetIsAnswer = zone.id === "answerZone";
 const inBankIdx = bankWords.findIndex(w => w.id === draggedWordId);
 const inAnsIdx = answerWords.findIndex(w => w.id === draggedWordId);
 if (targetIsAnswer && inBankIdx > -1) {
-answerWords.push(bankWords.splice(inBankIdx, 1));
+answerWords.push(bankWords.splice(inBankIdx, 1)[0]);
 } else if (!targetIsAnswer && inAnsIdx > -1) {
-bankWords.push(answerWords.splice(inAnsIdx, 1));
+bankWords.push(answerWords.splice(inAnsIdx, 1)[0]);
 }
 draggedWordId = null;
 renderClouds();
