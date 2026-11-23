@@ -164,7 +164,7 @@ const SONGS = [
       {
         label: "A",
         sentence: "Old MacDonald had a farm",
-        videoSrc: "media/oldmacdonald-nubes.mp3",
+        videoSrc: "media/oldmacdonald-nubes.mp4",
         instruction: "Ordena las palabras para formar la oración."
       }
     ]
@@ -275,7 +275,7 @@ const SONGS = [
       {
         label: "A",
         sentence: "A blue circle",
-        videoSrc: "media/draw-nubes.mp3",
+        videoSrc: "media/draw-nubes.mp4",
         instruction: "Ordena las palabras para formar la oración."
       }
     ]
